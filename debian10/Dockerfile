@@ -22,14 +22,6 @@ RUN for cmd in salt salt-api salt-call salt-cloud salt-cp salt-extend \
         chmod 0755 /usr/bin/$cmd; \
     done
 
-# Now do Python 2
-RUN for cmd in salt salt-api salt-call salt-cloud salt-cp salt-extend \
-               salt-key salt-master salt-minion salt-proxy salt-run salt-ssh \
-               salt-syndic salt-unity spm; do \
-        echo "#!/bin/bash\n\npython2 /testing/scripts/$cmd \"\$@\"" >/usr/bin/${cmd}2; \
-        chmod 0755 /usr/bin/${cmd}2; \
-    done
-
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget curl gcc g++ git openssh-server python-dev python3-dev libgit2-dev libffi-dev libxslt-dev libxml2-dev libssl-dev vim iproute2 less locales
 
@@ -53,12 +45,10 @@ RUN passwd --expire root
 
 # Get pip installed
 RUN curl https://bootstrap.pypa.io/get-pip.py >/get-pip.py
-RUN python2 /get-pip.py
 RUN python3 /get-pip.py
 
 # Install Python packages
 COPY requirements.txt /requirements.txt
-RUN python2 -m pip install -r /requirements.txt
 RUN python3 -m pip install -r /requirements.txt
 
 # Get rid of pudb welcome message, and turn on line numbers
